@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Selection | Cupcakes PIT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --page-bg: #f1f1f1;
+      --card-bg: #fff;
+      --line: #d9d9d9;
+      --muted: #6d6d6d;
+      --text: #2d2d2d;
+      --green: #8fc7b3;
+      --red: #ea6b53;
+      --shadow: rgba(0, 0, 0, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: 'Roboto', sans-serif;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.95);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar-inner,
+    .page {
+      width: min(1180px, calc(100% - 24px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      font-family: 'Pacifico', cursive;
+      font-size: 2rem;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .brand span { color: #f0b343; }
+
+    .nav {
+      display: flex;
+      gap: 26px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .nav a:hover { color: var(--text); }
+
+    .page { padding: 18px 0 46px; }
+
+    .crumbs {
+      padding: 10px 0 16px;
+      color: #757575;
+      font-size: 0.82rem;
+    }
+
+    .crumbs span { margin: 0 8px; }
+
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.8fr);
+      align-items: start;
+      gap: 18px;
+    }
+
+    .checkout-card,
+    .summary-card {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 1px 0 var(--shadow);
+      padding: 22px;
+    }
+
+    .checkout-card h1 {
+      margin: 0;
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(2rem, 3vw, 2.6rem);
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    .intro {
+      margin: 8px 0 22px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    fieldset {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    legend {
+      margin-bottom: 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .payment-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 10px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .payment-option:has(input:checked) {
+      border-color: var(--green);
+      box-shadow: inset 0 0 0 1px var(--green);
+    }
+
+    .payment-option input { margin-top: 3px; accent-color: #64a78a; }
+    .payment-option strong { display: block; margin-bottom: 4px; }
+    .payment-option small { color: var(--muted); line-height: 1.4; }
+
+    .method-info {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid #bfd7ca;
+      border-radius: 6px;
+      background: rgba(151, 201, 181, 0.12);
+      color: #315d4f;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .place-order {
+      width: 100%;
+      margin-top: 18px;
+      padding: 12px 18px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .place-order:disabled {
+      background: #bcbcbc;
+      cursor: not-allowed;
+    }
+
+    .confirmation-dialog {
+      width: min(520px, calc(100% - 32px));
+      max-height: min(82vh, 720px);
+      overflow: auto;
+      padding: 26px;
+      border: 0;
+      border-radius: 12px;
+      color: var(--text);
+      box-shadow: 0 14px 44px rgba(0,0,0,0.25);
+    }
+
+    .confirmation-dialog::backdrop { background: rgba(0,0,0,0.55); }
+
+    .confirmation-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      background: rgba(151, 201, 181, 0.25);
+      color: #315d4f;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .confirmation-dialog h2 {
+      margin: 0;
+      font-family: 'Pacifico', cursive;
+      font-size: 1.8rem;
+      font-weight: 400;
+    }
+
+    .confirmation-message {
+      margin: 6px 0 20px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .confirmation-summary {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    .confirmation-summary h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .confirmation-items {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .confirmation-payment,
+    .confirmation-total {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      font-size: 0.9rem;
+    }
+
+    .confirmation-payment { margin-top: 4px; }
+    .confirmation-payment[hidden] { display: none; }
+    .confirmation-fulfillment-message {
+      margin: 14px 0 0;
+      color: #315d4f;
+      font-weight: 500;
+      text-align: center;
+    }
+    .confirmation-total { margin: 12px 0 0; font-size: 1rem; font-weight: 700; }
+
+    .confirmation-actions { margin-top: 20px; }
+
+    .confirmation-actions button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 40px;
+      padding: 9px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .confirmation-actions .primary {
+      width: 100%;
+      min-height: 48px;
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .summary-card h2 {
+      margin: 0 0 16px;
+      font-size: 1.2rem;
+    }
+
+    .order-items {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+      font-size: 0.9rem;
+    }
+
+    .order-item:first-child { border-top: 0; }
+    .order-item-name { font-weight: 500; }
+    .order-item-detail { margin-top: 4px; color: var(--muted); font-size: 0.82rem; }
+    .order-item-price { white-space: nowrap; font-weight: 500; }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0 0;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .empty-order,
+    .order-error {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .order-error { color: #a52e22; }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 18px;
+      color: #3d7060;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    @media (max-width: 760px) {
+      .checkout-grid { grid-template-columns: 1fr; }
+      .nav { display: none; }
+    }
+
+    @media (max-width: 520px) {
+      .topbar-inner,
+      .page { width: min(100% - 16px, 1180px); }
+      .brand { font-size: 1.7rem; }
+      .checkout-card,
+      .summary-card { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="MenuRegular.html">Cupcake <span>PIT</span></a>
+      <nav class="nav" aria-label="Main menu">
+        <a href="MenuRegular.html">Food Court</a>
+        <a href="PaymentSelection.html" aria-current="page">Checkout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="crumbs">
+      <a href="MenuRegular.html">Food Court</a><span>/</span><span>Payment selection</span>
+    </div>
+
+    <div class="checkout-grid">
+      <section class="checkout-card" aria-labelledby="payment-title">
+        <h1 id="payment-title">Payment selection</h1>
+        <p class="intro">Choose a payment method to finish your Cupcakes PIT order.</p>
+
+        <form id="payment-form">
+          <p class="intro" id="fulfillment-summary" hidden></p>
+          <fieldset>
+            <legend>Payment method</legend>
+            <label class="payment-option">
+              <input type="radio" name="payment-method" value="Credit card" required />
+              <span>
+                <strong>Credit or debit card</strong>
+                <small>Select credit or debit card for this order.</small>
+              </span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment-method" value="PIX" required />
+              <span>
+                <strong>PIX</strong>
+                <small>Select PIX for this order.</small>
+              </span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment-method" value="Cash" required />
+              <span>
+                <strong>Cash</strong>
+                <small>Pay in cash when your order is ready.</small>
+              </span>
+            </label>
+          </fieldset>
+          <div class="method-info" id="method-info" aria-live="polite" hidden></div>
+          <button class="place-order" id="place-order" type="submit" disabled>Finish order</button>
+        </form>
+
+      </section>
+
+      <aside class="summary-card" aria-labelledby="summary-title">
+        <h2 id="summary-title">Order summary</h2>
+        <p class="empty-order" id="empty-order" hidden>Your cart is empty. Add products before checking out.</p>
+        <p class="order-error" id="order-error" role="alert" hidden>The order details are invalid. Return to the menu and try again.</p>
+        <ul class="order-items" id="order-items"></ul>
+        <p class="summary-total"><span>Total</span><span id="order-total">$0.00</span></p>
+        <a class="back-link" href="MenuRegular.html">← Back to menu</a>
+      </aside>
+    </div>
+  </main>
+  <dialog class="confirmation-dialog" id="order-confirmation" aria-labelledby="confirmation-title" aria-describedby="confirmation-message">
+    <div class="confirmation-mark" aria-hidden="true">✓</div>
+    <h2 id="confirmation-title">Order complete</h2>
+    <p class="confirmation-message" id="confirmation-message">Your order is complete.</p>
+    <p class="confirmation-order-id">Order ID: <strong id="confirmation-order-id"></strong></p>
+    <div class="confirmation-summary">
+      <h3>Order summary</h3>
+      <ul class="confirmation-items order-items" id="confirmation-items"></ul>
+      <div class="confirmation-payment">
+        <span>Payment method</span>
+        <strong id="confirmation-method"></strong>
+      </div>
+      <p class="confirmation-fulfillment-message" id="confirmation-fulfillment" hidden></p>
+      <p class="confirmation-total">
+        <span>Total</span>
+        <strong id="confirmation-total"></strong>
+      </p>
+    </div>
+    <div class="confirmation-actions">
+      <button class="primary" id="close-confirmation" type="button">Done</button>
+    </div>
+  </dialog>
+  <script src="PaymentSelection.js" defer></script>
+</body>
+</html>

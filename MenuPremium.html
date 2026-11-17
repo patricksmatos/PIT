@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Premium Cupcakes | Cupcakes PIT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --page-bg: #f1f1f1;
+      --line: #d9d9d9;
+      --muted: #6d6d6d;
+      --text: #2d2d2d;
+      --green: #8fc7b3;
+      --shadow: rgba(0, 0, 0, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: 'Roboto', sans-serif;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.95);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar-inner,
+    .page {
+      width: min(1180px, calc(100% - 24px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      font-family: 'Pacifico', cursive;
+      font-size: 2rem;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .brand span { color: #f0b343; }
+
+    .nav {
+      display: flex;
+      gap: 26px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .nav a:hover,
+    .nav a[aria-current="page"] { color: var(--text); }
+
+    .cart-wrap { position: relative; }
+
+    .cart {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      background: transparent;
+      font-size: 1.15rem;
+      cursor: pointer;
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      min-width: 17px;
+      height: 17px;
+      padding: 0 4px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: #ef8b4a;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      line-height: 13px;
+      text-align: center;
+    }
+
+    .cart-panel {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      z-index: 20;
+      width: min(340px, calc(100vw - 24px));
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+    }
+
+    .cart-panel[hidden],
+    .cookie-banner[hidden],
+    .cookie-settings[hidden],
+    .cookie-preferences[hidden] { display: none; }
+
+    .cart-panel h2 { margin: 0 0 12px; font-size: 1.05rem; }
+    .cart-items { list-style: none; margin: 0; padding: 0; }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 0;
+      border-top: 1px solid var(--line);
+      font-size: 0.88rem;
+    }
+
+    .cart-item-name { font-weight: 500; }
+    .cart-item-subtotal { margin-top: 3px; color: var(--muted); }
+    .cart-empty { margin: 0; padding: 10px 0; color: var(--muted); font-size: 0.88rem; }
+
+    .cart-remove {
+      padding: 6px;
+      border: 0;
+      background: transparent;
+      color: #b7493e;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      margin: 12px 0 0;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      font-weight: 700;
+    }
+
+    .cart-checkout {
+      width: 100%;
+      margin-top: 12px;
+      padding: 11px 16px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .cart-checkout:disabled { background: #bcbcbc; cursor: not-allowed; }
+
+    .page { padding: 18px 0 46px; }
+
+    .crumbs {
+      padding: 10px 0 16px;
+      color: #757575;
+      font-size: 0.82rem;
+    }
+
+    .crumbs span { margin: 0 8px; }
+
+    .section-card {
+      padding: 0 0 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.62);
+      box-shadow: 0 1px 0 var(--shadow);
+    }
+
+    .shop-title {
+      margin: 0;
+      padding: 18px 18px 10px;
+      color: #2b2b2b;
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(2rem, 2.8vw, 3rem);
+      line-height: 1;
+    }
+
+    .hero-image {
+      height: 320px;
+      margin: 0 18px 12px;
+      border: 1px solid rgba(0,0,0,0.05);
+      border-radius: 8px;
+      background: url('./Menu/cupcakes-variados.png') center/cover no-repeat;
+    }
+
+    .restaurant-meta {
+      padding: 4px 18px 12px;
+      color: #5a5a5a;
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+
+    .tabs {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin: 0 18px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .tab {
+      padding: 10px 0 12px;
+      border-bottom: 2px solid transparent;
+      color: #4d4d4d;
+      font-size: 0.95rem;
+    }
+
+    .tab.active {
+      border-color: #ef7f5d;
+      color: #1f1f1f;
+      font-weight: 500;
+    }
+
+    .product-pane {
+      margin: 10px 18px 0;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 10px;
+    }
+
+    .type-switch { display: flex; align-items: center; gap: 10px; }
+
+    .pill {
+      padding: 6px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.7);
+      color: #4d4d4d;
+      font-size: 0.88rem;
+    }
+
+    button.pill { font: inherit; font-size: 0.88rem; cursor: pointer; }
+
+    .pill.active {
+      border-color: #d5d5d5;
+      background: #f1f1f1;
+      color: #222;
+    }
+
+    .search-box input {
+      width: 220px;
+      height: 34px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.8);
+      color: var(--text);
+      font-size: 0.88rem;
+    }
+
+    .list { margin: 0; padding: 0; list-style: none; }
+
+    .item {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr) 140px;
+      align-items: center;
+      gap: 14px;
+      min-height: 92px;
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      justify-self: center;
+      border: 2px solid #b7b7b7;
+      border-radius: 50%;
+      background: #d2d2d2;
+    }
+
+    .item-main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .item-header { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .item-name { color: #2c2c2c; font-size: 1.05rem; font-weight: 500; }
+    .price { color: #d45b4b; font-size: 0.9rem; font-weight: 700; }
+    .desc { max-width: 560px; color: #6c6c6c; font-size: 0.86rem; line-height: 1.5; }
+
+    .thumb-action { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+
+    .thumb-mini {
+      width: 72px;
+      height: 72px;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 10px;
+      background-position: center;
+      background-size: cover;
+    }
+
+    .add-btn {
+      min-width: 60px;
+      padding: 8px 16px;
+      border: 0;
+      border-radius: 12px;
+      background: #92d1bf;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.06);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
+    .cookie-banner {
+      position: fixed;
+      z-index: 100;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      width: 100%;
+      padding: 18px 32px;
+      background: rgba(19,19,19,0.96);
+      color: rgba(255,255,255,0.9);
+    }
+
+    .cookie-copy { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 0.9rem; line-height: 1.5; }
+    .cookie-copy strong { color: #fff; font-size: 1.05rem; }
+    .cookie-copy span { opacity: 0.8; }
+    .cookie-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+    .cookie-btn {
+      padding: 8px 18px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .cookie-btn.primary { border-color: #f3f3f3; background: #f3f3f3; color: #222; font-weight: 600; }
+
+    .cookie-settings {
+      position: fixed;
+      z-index: 90;
+      bottom: 12px;
+      left: 12px;
+      padding: 8px 14px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 999px;
+      background: #222;
+      color: #fff;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .cookie-preferences {
+      width: min(440px, calc(100% - 32px));
+      padding: 24px;
+      border: 0;
+      border-radius: 12px;
+      color: var(--text);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    }
+
+    .cookie-preferences::backdrop { background: rgba(0,0,0,0.55); }
+    .cookie-preferences h2 { margin: 0 0 8px; font-size: 1.25rem; }
+    .cookie-preferences > p { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+
+    .cookie-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .cookie-option input { margin-top: 2px; }
+    .cookie-option strong { display: block; margin-bottom: 3px; }
+    .cookie-preference-actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .cookie-preference-actions .cookie-btn { border-color: var(--line); background: #fff; color: var(--text); }
+    .cookie-preference-actions .cookie-btn.primary { border-color: #222; background: #222; color: #fff; }
+    .cookie-error { color: #a52e22; font-size: 0.85rem; }
+
+    @media (max-width: 930px) {
+      .nav { display: none; }
+      .filter-bar { flex-direction: column; align-items: flex-start; }
+      .search-box,
+      .search-box input { width: 100%; }
+    }
+
+    @media (max-width: 620px) {
+      .topbar-inner,
+      .page { width: min(100% - 16px, 1180px); }
+      .brand { font-size: 1.7rem; }
+      .shop-title { padding-left: 12px; }
+      .tabs,
+      .product-pane { margin-right: 0; margin-left: 0; }
+      .tabs { flex-wrap: wrap; }
+      .filter-bar { gap: 12px; }
+      .type-switch { flex-wrap: wrap; }
+      .item { grid-template-columns: 16px minmax(0, 1fr); row-gap: 10px; }
+      .thumb-action { grid-column: 2; justify-content: flex-start; }
+      .cookie-banner { padding: 14px 18px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="MenuRegular.html">Cupcake <span>PIT</span></a>
+      <nav class="nav" aria-label="Main menu">
+        <a href="MenuRegular.html">Food Court</a>
+        <a href="MenuPremium.html" aria-current="page">Premium cupcakes</a>
+      </nav>
+      <div class="cart-wrap">
+        <button class="cart" id="cart-toggle" type="button" aria-label="Shopping cart, 0 items" aria-expanded="false" aria-controls="cart-panel">
+          🛒<span class="cart-count" id="cart-count" hidden>0</span>
+        </button>
+        <section class="cart-panel" id="cart-panel" aria-labelledby="cart-title" hidden>
+          <h2 id="cart-title">Your cart</h2>
+          <p class="cart-empty" id="cart-empty">Your cart is empty.</p>
+          <ul class="cart-items" id="cart-items"></ul>
+          <p class="cart-total"><span>Total</span><span id="cart-total">$0.00</span></p>
+          <button class="cart-checkout" id="cart-checkout" type="button" disabled>Continue to checkout</button>
+        </section>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="crumbs">
+      <a href="MenuRegular.html">Food Court</a><span>/</span><span>Cupcakes PIT</span><span>/</span><span>Premium</span>
+    </div>
+
+    <section class="section-card">
+      <h1 class="shop-title">Cupcakes PIT</h1>
+      <div class="hero-image" role="img" aria-label="Premium cupcake selection"></div>
+      <div class="restaurant-meta">
+        <div>840 S #c, US-1, Vero Beach, FL 32962, United States</div>
+        <div><strong>Premium cupcakes</strong></div>
+      </div>
+
+      <div class="tabs" aria-label="Store tabs">
+        <div class="tab active">Overview</div>
+        <div class="tab">Order Online</div>
+        <div class="tab">Reviews</div>
+      </div>
+
+      <div class="product-pane">
+        <div class="filter-bar">
+          <div class="type-switch" aria-label="Section filters">
+            <button class="pill" type="button" data-menu-category="regular" aria-pressed="false" aria-controls="product-list">Regular</button>
+            <button class="pill active" type="button" data-menu-category="premium" aria-pressed="true" aria-controls="product-list">Premium</button>
+          </div>
+
+          <div class="search-box">
+            <input type="search" aria-label="Search premium cupcakes" placeholder="Search" />
+          </div>
+
+          <div class="type-switch" aria-label="Product filters">
+            <div class="pill active">All</div>
+            <div class="pill">Veg Only</div>
+            <div class="pill">Non Veg Only</div>
+          </div>
+        </div>
+
+        <ul class="list" id="product-list" aria-live="polite"></ul>
+        <p class="visually-hidden" id="cart-status" aria-live="polite"></p>
+      </div>
+    </section>
+  </main>
+
+  <div class="cookie-banner" id="cookie-banner" role="dialog" aria-label="Cookie banner">
+    <div class="cookie-copy">
+      <strong>We Serve Cookies</strong>
+      <span>We use cookies to ensure you get the best experience on our website. Cookies also assist in our marketing efforts and analytics. By clicking Accept, you agree to our use of cookies. Learn more about <a href="#" style="color:#dfe8ff;text-decoration:underline;">Privacy Policy</a> and <a href="#" style="color:#dfe8ff;text-decoration:underline;">Cookies Policy</a>.</span>
+    </div>
+    <div class="cookie-actions">
+      <button class="cookie-btn primary" id="cookie-accept" type="button">Accept</button>
+      <button class="cookie-btn" id="cookie-decline" type="button">Decline</button>
+      <button class="cookie-btn" id="cookie-manage" type="button">Manage</button>
+    </div>
+    <p class="cookie-error" id="cookie-banner-error" role="alert" hidden>We couldn't save your cookie choice. Please try again.</p>
+  </div>
+  <button class="cookie-settings" id="cookie-settings" type="button" hidden>Cookie settings</button>
+  <dialog class="cookie-preferences" id="cookie-preferences" aria-labelledby="cookie-preferences-title">
+    <h2 id="cookie-preferences-title">Cookie preferences</h2>
+    <p>Choose which optional cookies you allow. Necessary cookies are always enabled.</p>
+    <label class="cookie-option">
+      <input type="checkbox" checked disabled />
+      <span><strong>Necessary</strong>Required for basic site functions.</span>
+    </label>
+    <label class="cookie-option">
+      <input type="checkbox" id="cookie-analytics" />
+      <span><strong>Analytics</strong>Help us understand how the site is used.</span>
+    </label>
+    <label class="cookie-option">
+      <input type="checkbox" id="cookie-marketing" />
+      <span><strong>Marketing</strong>Help us measure and tailor marketing.</span>
+    </label>
+    <p class="cookie-error" id="cookie-preferences-error" role="alert" hidden>We couldn't save your cookie preferences. Please try again.</p>
+    <div class="cookie-preference-actions">
+      <button class="cookie-btn" id="cookie-cancel" type="button">Cancel</button>
+      <button class="cookie-btn primary" id="cookie-save" type="button">Save preferences</button>
+    </div>
+  </dialog>
+
+  <script src="MenuProducts.js" defer></script>
+  <script src="Cart.js" defer></script>
+  <script src="CookieConsent.js" defer></script>
+</body>
+</html>
